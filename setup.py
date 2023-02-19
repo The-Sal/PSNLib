@@ -7,4 +7,8 @@ setup(
         'PSNLib': ['assets/PSNOCR', 'assets/*.png'],
     },
     include_package_data=True,
+    # The following are dependencies that are required for this package to work.
+    install_requires=[
+        'git+https://github.com/The-Sal/DartVision'
+    ]
 )
