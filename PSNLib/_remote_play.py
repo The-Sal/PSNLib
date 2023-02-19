@@ -307,12 +307,12 @@ class RemotePlay(_RemotePlayBasic):
                 if item_name.__contains__(':'):
                     # self._log('Game name contains a colon, checking for a match without the colon...')
                     r2 = difflib.SequenceMatcher(None, item_name.split(':'), gameName).ratio()
-                    print('GameName{} ItemName{} r2{}'.format(gameName, item_name, r2))
+                    # print('GameName{} ItemName{} r2{}'.format(gameName, item_name, r2))
                     if r2 > r:
                         r = r2
                 else:
-                    print('GameName{} ItemName{} r{}'.format(gameName, item_name, r))
-
+                    # print('GameName{} ItemName{} r{}'.format(gameName, item_name, r))
+                    pass
                 # self._log('Current Ratio: {}'.format(r.__round__(2)))
                 if r > 0.8:
                     self._log('Found game: {}'.format(gameName))
