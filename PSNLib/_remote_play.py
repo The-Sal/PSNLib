@@ -231,6 +231,12 @@ class RemotePlay(_RemotePlayBasic):
             time.sleep(0.1)
             with Vis.ScreenShot() as ss:
                 text = self._ocr.recognize(ss)
+                for z in text:
+                    if z.__contains__(CONNECTED):
+                        self._log('Connected to PS5!')
+                        connected = True
+                        break
+
                 if (CHECKING_NETWORK in text) or (CHECKING_NETWORK2 in text) \
                         or (CHECKING_NETWORK3 in text):
                     self._log('Checking the network...')
@@ -239,12 +245,6 @@ class RemotePlay(_RemotePlayBasic):
                 elif SEARCHING_FOR_CONNECTIONS in text:
                     self._log('Searching for connections...')
                 else:
-                    for z in text:
-                        if z.__contains__(CONNECTED):
-                            self._log('Connected to PS5!')
-                            connected = True
-                            break
-
                     buffer -= 1
 
     def _log(self, msg):
@@ -288,6 +288,7 @@ class RemotePlay(_RemotePlayBasic):
         self.open()
         self.setFullScreen()
         self.escapeKey()
+        self.escapeKey()
         time.sleep(2)
         # check if the item on the screen now is the playstation store
         with Vis.ScreenShot() as ss:
@@ -324,7 +325,6 @@ class RemotePlay(_RemotePlayBasic):
                     raise RemotePlayError('Unable to find game: {}'.format(gameName))
 
         raise RemotePlayError('Attempted to find game: {} 100 times, unable to find it'.format(gameName))
-
 
 
 if __name__ == '__main__':
