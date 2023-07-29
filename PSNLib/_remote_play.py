@@ -132,6 +132,9 @@ class _OsaScriptHelper(_MouseClick):
     def enterKey(self):
         self._pressKeyCode(36)
 
+    def deleteKey(self):
+        self._pressKeyCode(51)
+
 
 class _SaveColor(_OsaScriptHelper):
     def __init__(self):
@@ -287,6 +290,9 @@ class RemotePlay(_RemotePlayBasic):
         assert isinstance(gameName, str)
         self.open()
         self.setFullScreen()
+        time.sleep(1)
+        self.deleteKey()
+        self.deleteKey()
         self.escapeKey()
         self.escapeKey()
         time.sleep(2)
