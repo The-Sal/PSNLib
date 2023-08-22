@@ -39,6 +39,16 @@ class _MouseClick:
         assert self._executable_pt is not None, 'Executable path is not set.'
         command([self._executable_pt, 'c:{},{}'.format(x, y)])
 
+    def pressDownClick(self, x, y, press_duration):
+        assert self._executable_pt is not None, 'Executable path is not set.'
+        command([
+            self._executable_pt, 'dd:{},{}'.format(x, y),
+        ])
+        time.sleep(press_duration)
+        command([
+            self._executable_pt, 'du:{},{}'.format(x, y),
+        ])
+
 
 class _OsaScriptHelper(_MouseClick):
     def __init__(self, cliclick_pt=None):
@@ -291,6 +301,13 @@ class RemotePlay(_RemotePlayBasic):
         self.open()
         self.setFullScreen()
         time.sleep(1)
+
+
+        # Click the ps button to make sure we are in the view of all  the games
+        button_img = relativeItem('ps button.png')
+        x, y = Vis.ImageCords(button_img).cords
+        self.pressDownClick(x, y, 3)
+
         self.deleteKey()
         self.deleteKey()
         self.escapeKey()
@@ -319,12 +336,12 @@ class RemotePlay(_RemotePlayBasic):
 
                 if item_name.__contains__(':'):
                     # self._log('Game name contains a colon, checking for a match without the colon...')
-                    r2 = difflib.SequenceMatcher(None, item_name.split(':'), gameName).ratio()
-                    # print('GameName{} ItemName{} r2{}'.format(gameName, item_name, r2))
+                    r2 = difflib.SequenceMatcher(None, item_name.split(':')[0], gameName).ratio()
+                    # self._log('GameName:{} ItemName:{} r2{}'.format(gameName, item_name, r2))
                     if r2 > r:
                         r = r2
                 else:
-                    # print('GameName{} ItemName{} r{}'.format(gameName, item_name, r))
+                    # self._log('GameName{} ItemName{} r{}'.format(gameName, item_name, r))
                     pass
                 # self._log('Current Ratio: {}'.format(r.__round__(2)))
                 if r > 0.8:
@@ -344,7 +361,7 @@ if __name__ == '__main__':
         print(words)
         subprocess.check_call(['say', words])
 
-
+    # noinspection SpellCheckingInspection
     rp = RemotePlay('/Users/Sal/Projects/CrossLanguage/Dart/Builds/Dart2.1/Assets/cliclick', logger=speaker)
     rp.connect()
     rp.openGame('call of duty')
