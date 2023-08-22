@@ -3,7 +3,7 @@ import time
 import difflib
 import subprocess
 from PSNLib._utils import relativeItem
-from PSNLib._psOCR import recogniseGame
+from PSNLib._psOCR import recogniseGame, PsOCRException
 from utils3.system import allProcesses, command
 
 # Static Values
@@ -307,7 +307,13 @@ class RemotePlay(_RemotePlayBasic):
             time.sleep(0.2)
 
             with Vis.ScreenShot() as ss:
-                item_name = self._extractGameName(ss)
+                try:
+                    item_name = self._extractGameName(ss)
+                except PsOCRException:
+                    with Vis.ScreenShot() as s2:
+                        item_name = self._extractGameName(s2)
+
+
                 # self._log('Current Item on screen: {}'.format(item_name))
                 r = difflib.SequenceMatcher(None, item_name, gameName).ratio()
 
