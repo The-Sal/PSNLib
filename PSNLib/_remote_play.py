@@ -37,15 +37,15 @@ class _MouseClick:
 
     def click(self, x, y):
         assert self._executable_pt is not None, 'Executable path is not set.'
-        command([self._executable_pt, 'c:{},{}'.format(x, y)])
+        subprocess.check_call([self._executable_pt, 'c:{},{}'.format(x, y)])
 
     def pressDownClick(self, x, y, press_duration):
         assert self._executable_pt is not None, 'Executable path is not set.'
-        command([
+        subprocess.check_call([
             self._executable_pt, 'dd:{},{}'.format(x, y),
         ])
         time.sleep(press_duration)
-        command([
+        subprocess.check_call([
             self._executable_pt, 'du:{},{}'.format(x, y),
         ])
 
@@ -308,16 +308,27 @@ class RemotePlay(_RemotePlayBasic):
         x, y = Vis.ImageCords(button_img).cords
         self.pressDownClick(x, y, 3)
 
-        self.deleteKey()
-        self.deleteKey()
-        self.escapeKey()
-        self.escapeKey()
-        time.sleep(2)
+        def _goToLibrary():
+            self.deleteKey()
+            self.escapeKey()
+
+
         # check if the item on the screen now is the playstation store
-        with Vis.ScreenShot() as ss:
-            item_name = self._extractGameName(ss)
-            assert difflib.SequenceMatcher(None, item_name, 'playstation store').ratio() > 0.8, 'Unable to find ' \
-                                                                                                'the playstation store'
+        for _ in range(10):
+            try:
+                _goToLibrary()  # This new system is much faster as it checks if the store is on screen rather than
+                # waiting a fixed amount of time
+                time.sleep(0.5)
+                with Vis.ScreenShot() as ss:
+                    item_name = self._extractGameName(ss)
+                    assert difflib.SequenceMatcher(None, item_name,
+                                                   'playstation store').ratio() > 0.8, 'Unable to find ' \
+                                                                                       'the playstation store'
+
+                    break
+            except AssertionError:
+                time.sleep(1)
+
 
         for _ in range(100):
             self.rightArrow()
