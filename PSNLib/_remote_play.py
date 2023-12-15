@@ -209,21 +209,30 @@ class RemotePlay(_RemotePlayBasic):
         self._logger = logger
 
     @inDarkMode
-    def connect(self):
+    def connect(self, _test_n=0):
         # Compare what's on the screen now and what will be on the screen after we open the RemotePlay
         # app this way we just get the new and relevant text.
         with Vis.ScreenShot() as ss_old:
             old_text = self._ocr.recognize(ss_old)
             self.open()  # Open the RemotePlay app
             with Vis.ScreenShot() as ss:
+                subprocess.check_call(['open', ss])
                 text = self._ocr.recognize(ss)
                 for z in old_text:
                     if z in text:
                         text.remove(z)
 
-        if NOT_SIGNED_IN in text:
-            raise RemotePlayError("Not signed in to PSNLib, Please login and try again...")
-        assert SIGNED_IN in text, "Could not find the connect button"
+        try:
+            if NOT_SIGNED_IN in text:
+                raise RemotePlayError("Not signed in to PSNLib, Please login and try again...")
+            assert SIGNED_IN in text, "Could not find the connect button"
+
+        except AssertionError:
+            if _test_n > 5:
+                raise
+            else:
+                self._log('Could not find the connect button, trying again...')
+                self.connect(_test_n=1)
 
         # Every one has a different PSNLib name, so we are going to find a static element and transform
         # the coordinates to the connect button via a static offset.
@@ -321,6 +330,7 @@ class RemotePlay(_RemotePlayBasic):
                 time.sleep(0.5)
                 with Vis.ScreenShot() as ss:
                     item_name = self._extractGameName(ss)
+                    # self._log('Item on screen: {}'.format(item_name))
                     assert difflib.SequenceMatcher(None, item_name,
                                                    'playstation store').ratio() > 0.8, 'Unable to find ' \
                                                                                        'the playstation store'
@@ -373,6 +383,6 @@ if __name__ == '__main__':
         subprocess.check_call(['say', words])
 
     # noinspection SpellCheckingInspection
-    rp = RemotePlay('/Users/Sal/Projects/CrossLanguage/Dart/Builds/Dart2.1/Assets/cliclick', logger=speaker)
-    rp.connect()
-    rp.openGame('call of duty')
+    rp = RemotePlay('/Users/Salman/Projects/CrossLanguage/Dart/Builds/Dart2.1/Assets/cliclick', logger=speaker)
+    # rp.connect()
+    rp.openGame('grand theft auto v')

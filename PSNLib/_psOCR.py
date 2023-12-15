@@ -23,4 +23,4 @@ def recogniseGame(img: str) -> str:
 
 
 if __name__ == '__main__':
-    print(recogniseGame('/Users/Sal/Desktop/1.png'))
+    print(recogniseGame('/Users/Salman/Desktop/1.png'))
