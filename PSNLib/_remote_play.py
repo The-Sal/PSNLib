@@ -216,7 +216,7 @@ class RemotePlay(_RemotePlayBasic):
             old_text = self._ocr.recognize(ss_old)
             self.open()  # Open the RemotePlay app
             with Vis.ScreenShot() as ss:
-                subprocess.check_call(['open', ss])
+                # subprocess.check_call(['open', ss])
                 text = self._ocr.recognize(ss)
                 for z in old_text:
                     if z in text:
