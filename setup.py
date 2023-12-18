@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 setup(
     name='PSNLib',
-    version='0.0.1',
+    version='0.0.2–dev',
     packages=find_packages(),
     package_data={
         'PSNLib': ['assets/PSNOCR', 'assets/*.png'],

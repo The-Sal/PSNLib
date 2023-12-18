@@ -212,15 +212,26 @@ class RemotePlay(_RemotePlayBasic):
     def connect(self, _test_n=0):
         # Compare what's on the screen now and what will be on the screen after we open the RemotePlay
         # app this way we just get the new and relevant text.
-        with Vis.ScreenShot() as ss_old:
-            old_text = self._ocr.recognize(ss_old)
-            self.open()  # Open the RemotePlay app
+
+        def createSS(old_text):
             with Vis.ScreenShot() as ss:
                 # subprocess.check_call(['open', ss])
-                text = self._ocr.recognize(ss)
+                txt = self._ocr.recognize(ss)
                 for z in old_text:
-                    if z in text:
-                        text.remove(z)
+                    if z in txt:
+                        txt.remove(z)
+
+            return txt
+
+        with Vis.ScreenShot() as ss_old:
+            old = self._ocr.recognize(ss_old)
+            self.open()  # Open the RemotePlay app
+            if self.foreground() == 'RemotePlay':
+                # self._log('Remote Play is already in foreground')
+                text = old
+            else:
+                text = createSS(old)
+
 
         try:
             if NOT_SIGNED_IN in text:
@@ -233,6 +244,7 @@ class RemotePlay(_RemotePlayBasic):
             else:
                 self._log('Could not find the connect button, trying again...')
                 self.connect(_test_n=1)
+                return
 
         # Every one has a different PSNLib name, so we are going to find a static element and transform
         # the coordinates to the connect button via a static offset.
@@ -243,7 +255,7 @@ class RemotePlay(_RemotePlayBasic):
         self._log('Connecting to PSNLib...')
         self.click(x, y)
         time.sleep(2)
-        self._log('Muting the system while we wait for the PS5 to connect...')
+        # self._log('Muting the system while we wait for the PS5 to connect...')
 
         connected = False
 
@@ -384,5 +396,5 @@ if __name__ == '__main__':
 
     # noinspection SpellCheckingInspection
     rp = RemotePlay('/Users/Salman/Projects/CrossLanguage/Dart/Builds/Dart2.1/Assets/cliclick', logger=speaker)
-    # rp.connect()
-    rp.openGame('grand theft auto v')
+    rp.connect()
+    # rp.openGame('grand theft auto v')
