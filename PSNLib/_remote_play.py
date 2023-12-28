@@ -396,5 +396,5 @@ if __name__ == '__main__':
 
     # noinspection SpellCheckingInspection
     rp = RemotePlay('/Users/Salman/Projects/CrossLanguage/Dart/Builds/Dart2.1/Assets/cliclick', logger=speaker)
-    rp.connect()
-    # rp.openGame('grand theft auto v')
+    # rp.connect()
+    rp.openGame('rocket league')
