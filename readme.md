@@ -6,4 +6,4 @@ There are two main submodules:
     API – This module works directly with private playstation endpoints (requires a PSN account ids via os.environ).
 
 
-Find Complete Documentation and Method breakdowon of the classes in this Module at: https://caramel-cobbler-204.notion.site/PSN-Lib-02087fe152394be48b74985548569a66
+Find Complete Documentation and Method breakdowon of the classes in this Module at: https://www.notion.so/salfaris/RemotePlay-Documentation-Architecture-1029613dbaaa4ccf822b021969eb2c5f?pvs=4
