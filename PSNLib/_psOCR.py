@@ -1,4 +1,6 @@
+import pprint
 import subprocess
+from utils3 import probe
 try:
     from ._utils import relativeItem
 except ImportError:
@@ -7,7 +9,7 @@ except ImportError:
 class PsOCRException(Exception):
     pass
 
-
+# @probe(lambda x: pprint.pp(x))
 def recogniseGame(img: str) -> str:
     ocr = relativeItem('PSNOCR')
     proc = subprocess.Popen([ocr, img], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -20,7 +22,3 @@ def recogniseGame(img: str) -> str:
         return output.split('OK:')[1].strip()
     else:
         raise PsOCRException(out)
-
-
-if __name__ == '__main__':
-    print(recogniseGame('/Users/Salman/Desktop/1.png'))

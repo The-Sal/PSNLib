@@ -314,9 +314,26 @@ class RemotePlay(_RemotePlayBasic):
         #     return text[0].lower()
         # ----------
 
-        return recogniseGame(image).lower()
+        try:
+            return recogniseGame(image).lower()
+        except AttributeError:
+            raise PsOCRException('Unable to extract game name from image')
 
-    def openGame(self, gameName):
+
+
+    def openGame(self, gameName, ref_item_name='playstation store', ref_item_conf=0.8):
+        """
+        Open a game on the PlayStation using Remote Play.
+
+        This function navigates through the PlayStation interface to find and open a specified game.
+        It uses OCR to recognize the game names on the screen and compares them to the target game name.
+
+        :param gameName: The name of the game to open.
+        :param ref_item_name: The reference item name to locate the starting point for game navigation.
+                              On some versions of PlayStation, this is called 'playstation store', on others 'welcome'.
+        :param ref_item_conf: The confidence score for OCR matching. Depending on the background set on the PlayStation,
+                              the confidence score may need to be adjusted because the OCR might not read properly.
+        """
         gameName = gameName.lower()
         assert isinstance(gameName, str)
         self.open()
@@ -335,6 +352,7 @@ class RemotePlay(_RemotePlayBasic):
 
 
         # check if the item on the screen now is the playstation store
+        found = False
         for _ in range(10):
             try:
                 _goToLibrary()  # This new system is much faster as it checks if the store is on screen rather than
@@ -342,14 +360,21 @@ class RemotePlay(_RemotePlayBasic):
                 time.sleep(0.5)
                 with Vis.ScreenShot() as ss:
                     item_name = self._extractGameName(ss)
-                    # self._log('Item on screen: {}'.format(item_name))
-                    assert difflib.SequenceMatcher(None, item_name,
-                                                   'playstation store').ratio() > 0.8, 'Unable to find ' \
-                                                                                       'the playstation store'
+                    ratio = difflib.SequenceMatcher(None, item_name, ref_item_name).ratio()
+                    if not ratio > ref_item_conf:
+                        self._log('Could not find reference item: {}, current item and ration: {} {}'.format(
+                            ref_item_name, item_name, ratio
+                        ))
+                        raise AssertionError('Unable to find the playstation store')
+
+                    found = True
 
                     break
             except AssertionError:
                 time.sleep(1)
+
+        if not found:
+            raise RemotePlayError('Unable to find the playstation store')
 
 
         for _ in range(100):
@@ -396,5 +421,5 @@ if __name__ == '__main__':
 
     # noinspection SpellCheckingInspection
     rp = RemotePlay('/Users/Salman/Projects/CrossLanguage/Dart/Builds/Dart2.1/Assets/cliclick', logger=speaker)
-    # rp.connect()
-    rp.openGame('rocket league')
+    rp.connect()
+    rp.openGame('rocket league', ref_item_name='welcome', ref_item_conf=0.5)
